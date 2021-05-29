@@ -2340,13 +2340,7 @@ blockquote footer cite:before {
   transform: scale(1.1);
 }
 #recent-posts > .recent-post-item .left_radius {
-  -webkit-box-ordinal-group: 2;
-  -moz-box-ordinal-group: 2;
-  -o-box-ordinal-group: 2;
-  -ms-flex-order: 2;
-  -webkit-order: 2;
-  order: 2;
-  border-radius: 0 8px 8px 0;
+  border-radius: 8px 0 0 8px;
 }
 #recent-posts > .recent-post-item .right_radius {
   -webkit-box-ordinal-group: 2;
@@ -3424,7 +3418,7 @@ blockquote footer cite:before {
 }
 #page-header.full_page #site-info {
   position: absolute;
-  top: 43%;
+  top: 250px;
   padding: 0 0.5rem;
   width: 100%;
 }
