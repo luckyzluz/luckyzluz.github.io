@@ -26,7 +26,7 @@
 <p>构造函数就是一个普通的函数，创建方式和普通函数没有区别，<strong>不同的是构造函数习惯上首字母大写</strong>。另外就是调用方式的不同，普通函数是直接调用，<strong>而构造函数需要使用new关键字来调用</strong>。</p>
 <figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Person</span>(<span class="params">name, age, gender</span>) </span>&#123;</span><br><span class="line">	<span class="built_in">this</span>.name = name</span><br><span class="line">	<span class="built_in">this</span>.age = age</span><br><span class="line">	<span class="built_in">this</span>.gender = gender</span><br><span class="line">	<span class="built_in">this</span>.sayName = <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">		alert(<span class="built_in">this</span>.name);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">var</span> per = <span class="keyword">new</span> Person(<span class="string">&quot;孙悟空&quot;</span>, <span class="number">18</span>, <span class="string">&quot;男&quot;</span>);</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Dog</span>(<span class="params">name, age, gender</span>) </span>&#123;</span><br><span class="line">	<span class="built_in">this</span>.name = name</span><br><span class="line">	<span class="built_in">this</span>.age = age</span><br><span class="line">	<span class="built_in">this</span>.gender = gender</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">var</span> dog = <span class="keyword">new</span> Dog(<span class="string">&quot;旺财&quot;</span>, <span class="number">4</span>, <span class="string">&quot;雄&quot;</span>)</span><br><span class="line"><span class="built_in">console</span>.log(per);<span class="comment">//当我们直接在页面中打印一个对象时，事件上是输出的对象的toString()方法的返回值</span></span><br><span class="line"><span class="built_in">console</span>.log(dog);</span><br></pre></td></tr></table></figure>
 
-<p><img src="https://img-blog.csdnimg.cn/img_convert/15543f1ae9cfe7e95d30522f2bb5d254.png"></p>
+<p><img src="/images/yuanxing.png"></p>
 <p>每创建一个Person构造函数，在Person构造函数中，为每一个对象都添加了一个sayName方法，也就是说构造函数每执行一次就会创建一个新的sayName方法。这样就导致了构造函数执行一次就会创建一个新的方法，执行10000次就会创建10000个新的方法，而10000个方法都是一摸一样的，为什么不把这个方法单独放到一个地方，并让所有的实例都可以访问到呢?这就需要原型(<code>prototype</code>)</p>
 <h2 id="二、原型"><a href="#二、原型" class="headerlink" title="二、原型"></a>二、原型</h2><p><strong>在JavaScript中，每当定义一个函数数据类型(普通函数、类)时候，都会天生自带一个<code>prototype</code>属性，这个属性指向函数的原型对象，并且这个属性是一个对象数据类型的值。</strong></p>
 <p>让我们用一张图表示构造函数和实例原型之间的关系：</p>
@@ -1655,6 +1655,117 @@
       <tags>
         <tag>面试</tag>
         <tag>原生JS</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>js事件循环机制</title>
+    <url>/article/ad6fd215.html</url>
+    <content><![CDATA[<p>先来明白些概念性内容。</p>
+<h2 id="进程、线程"><a href="#进程、线程" class="headerlink" title="进程、线程"></a>进程、线程</h2><ul>
+<li><strong>进程</strong>是系统分配的独立资源，是 CPU 资源分配的基本单位，进程是由一个或者多个线程组成的。</li>
+<li><strong>线程</strong>是进程的执行流，是CPU调度和分派的基本单位，同个进程之中的多个线程之间是共享该进程的资源的。</li>
+</ul>
+<h2 id="浏览器内核"><a href="#浏览器内核" class="headerlink" title="浏览器内核"></a>浏览器内核</h2><p>​        浏览器是多进程的，浏览器每一个 tab 标签都代表一个独立的进程（也不一定，因为多个空白 tab 标签会合并成一个进程），浏览器内核（浏览器渲染进程）属于浏览器多进程中的一种。</p>
+<p>​        浏览器内核有多种线程在工作。</p>
+<ol>
+<li><p>GUI 渲染线程:</p>
+<ul>
+<li><p>负责渲染页面，解析 HTML，CSS 构成 DOM 树等，当页面重绘或者由于某种操作引起回流都会调起该线程。</p>
+</li>
+<li><p>和 JS 引擎线程是互斥的，当 JS 引擎线程在工作的时候，GUI 渲染线程会被挂起，GUI 更新被放入在 JS 任务队列中，等待 JS 引擎线程空闲的时候继续执行。</p>
+</li>
+</ul>
+</li>
+<li><p>JS 引擎线程:</p>
+<ul>
+<li><p>单线程工作，负责解析运行 JavaScript 脚本。</p>
+</li>
+<li><p>和 GUI 渲染线程互斥，JS 运行耗时过长就会导致页面阻塞。</p>
+</li>
+</ul>
+</li>
+<li><p>事件触发线程:</p>
+<p>当事件符合触发条件被触发时，该线程会把对应的事件回调函数添加到任务队列的队尾，等待 JS 引擎处理。</p>
+</li>
+<li><p>定时器触发线程:</p>
+<ul>
+<li><p>浏览器定时计数器并不是由 JS 引擎计数的，阻塞会导致计时不准确。</p>
+</li>
+<li><p>开启定时器触发线程来计时并触发计时，计时完成后会被添加到任务队列中，等待 JS 引擎处理。</p>
+</li>
+</ul>
+</li>
+<li><p>http 请求线程:</p>
+<ul>
+<li><p>请求的时候会开启一条请求线程。</p>
+</li>
+<li><p>请求完成有结果了之后，将请求的回调函数添加到任务队列中，等待 JS 引擎处理。</p>
+</li>
+</ul>
+</li>
+</ol>
+<img src="/images/42146675.png" style="zoom:67%;" />
+
+<h2 id="JavaScript-引擎是单线程"><a href="#JavaScript-引擎是单线程" class="headerlink" title="JavaScript 引擎是单线程"></a>JavaScript 引擎是单线程</h2><p>​        JavaScript 引擎是单线程，也就是说每次只能执行一项任务，其他任务都得按照顺序排队等待被执行，只有当前的任务执行完成之后才会往下执行下一个任务。</p>
+<p>​        HTML5 中提出了 Web-Worker API，主要是为了解决页面阻塞问题，但是并没有改变 JavaScript 是单线程的本质。了解 <a href="https://developer.mozilla.org/zh-CN/docs/Web/API/Web_Workers_API">Web-Worker</a>。</p>
+<h2 id="JavaScript-事件循环机制"><a href="#JavaScript-事件循环机制" class="headerlink" title="JavaScript 事件循环机制"></a>JavaScript 事件循环机制</h2><p>​        JavaScript 事件循环机制分为浏览器和 Node 事件循环机制，两者的实现技术不一样，浏览器 Event Loop 是 HTML 中定义的规范，Node Event Loop 是由 libuv 库实现。这里主要讲的是浏览器部分。</p>
+<p>​        Javascript 有一个 main thread 主线程和 call-stack 调用栈(执行栈)，所有的任务都会被放到调用栈等待主线程执行。</p>
+<ul>
+<li><p>JS 调用栈</p>
+<p>JS 调用栈是一种后进先出的数据结构。当函数被调用时，会被添加到栈中的顶部，执行完成之后就从栈顶部移出该函数，直到栈内被清空。</p>
+</li>
+<li><p>同步任务、异步任务</p>
+<p>JavaScript 单线程中的任务分为同步任务和异步任务。同步任务会在调用栈中按照顺序排队等待主线程执行，异步任务则会在异步有了结果后将注册的回调函数添加到任务队列(消息队列)中等待主线程空闲的时候，也就是栈内被清空的时候，被读取到栈中等待主线程执行。任务队列是先进先出的数据结构。</p>
+</li>
+<li><p>Event Loop</p>
+<p>调用栈中的同步任务都执行完毕，栈内被清空了，就代表主线程空闲了，这个时候就会去任务队列中按照顺序读取一个任务放入到栈中执行。每次栈内被清空，都会去读取任务队列有没有任务，有就读取执行，一直循环读取-执行的操作，就形成了事件循环。</p>
+</li>
+</ul>
+<img src="/images/42146683.png" style="zoom:67%;" />
+
+<img src="/images/42146690.png" style="zoom:67%;" />
+
+
+
+<ul>
+<li><p>定时器</p>
+<p>定时器会开启一条定时器触发线程来触发计时，定时器会在等待了指定的时间后将事件放入到任务队列中等待读取到主线程执行。</p>
+<p>定时器指定的延时毫秒数其实并不准确，因为定时器只是在到了指定的时间时将事件放入到任务队列中，必须要等到同步的任务和现有的任务队列中的事件全部执行完成之后，才会去读取定时器的事件到主线程执行，中间可能会存在耗时比较久的任务，那么就不可能保证在指定的时间执行。</p>
+</li>
+<li><p>宏任务(macro-task)、微任务(micro-task)</p>
+<p>除了广义的同步任务和异步任务，JavaScript 单线程中的任务可以细分为宏任务和微任务。</p>
+<p>macro-task包括：script(整体代码), setTimeout, setInterval, setImmediate, I/O, UI rendering。</p>
+<p>micro-task包括：process.nextTick, Promises, Object.observe, MutationObserver。</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="built_in">console</span>.log(<span class="number">1</span>);</span><br><span class="line"><span class="built_in">setTimeout</span>(<span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="number">2</span>);</span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">var</span> promise = <span class="keyword">new</span> <span class="built_in">Promise</span>(<span class="function"><span class="keyword">function</span>(<span class="params">resolve, reject</span>) </span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="number">3</span>);</span><br><span class="line">    resolve();</span><br><span class="line">&#125;)</span><br><span class="line">promise.then(<span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="number">4</span>);</span><br><span class="line">&#125;)</span><br><span class="line"><span class="built_in">console</span>.log(<span class="number">5</span>);</span><br></pre></td></tr></table></figure>
+
+<p>​    示例中，setTimeout 和 Promise被称为任务源，来自不同的任务源注册的回调函数会被放入到不同的任务队列中。</p>
+<p>​        有了宏任务和微任务的概念后，那 JS 的执行顺序是怎样的？是宏任务先还是微任务先？</p>
+<p>​        第一次事件循环中，JavaScript 引擎会把整个 script 代码当成一个宏任务执行，执行完成之后，再检测本次循环中是否寻在微任务，存在的话就依次从微任务的任务队列中读取执行完所有的微任务，再读取宏任务的任务队列中的任务执行，再执行所有的微任务，如此循环。JS 的执行顺序就是每次事件循环中的宏任务-微任务。</p>
+<ul>
+<li>上面的示例中，第一次事件循环，整段代码作为宏任务进入主线程执行。</li>
+<li>遇到了 setTimeout ，就会等到过了指定的时间后将回调函数放入到宏任务的任务队列中。</li>
+<li>遇到 Promise，将 then 函数放入到微任务的任务队列中。</li>
+<li>整个事件循环完成之后，会去检测微任务的任务队列中是否存在任务，存在就执行。</li>
+<li>第一次的循环结果打印为: 1,3,5,4。</li>
+<li>接着再到宏任务的任务队列中按顺序取出一个宏任务到栈中让主线程执行，那么在这次循环中的宏任务就是 setTimeout 注册的回调函数，执行完这个回调函数，发现在这次循环中并不存在微任务，就准备进行下一次事件循环。</li>
+<li>检测到宏任务队列中已经没有了要执行的任务，那么就结束事件循环。</li>
+<li>最终的结果就是 1,3,5,4,2。</li>
+</ul>
+<p>后记</p>
+</li>
+</ul>
+<hr>
+<p>如需前端交流请以以下方式联系。</p>
+<blockquote>
+<p>QQ:2567046155<br>Q群:110156046<br>备注：加好友请注明来源。</p>
+</blockquote>
+]]></content>
+      <categories>
+        <category>知识点归纳</category>
+      </categories>
+      <tags>
+        <tag>Javascript</tag>
+        <tag>事件循环机制</tag>
       </tags>
   </entry>
 </search>
