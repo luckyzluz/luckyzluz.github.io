@@ -3292,6 +3292,15 @@ blockquote footer cite:before {
     transform: scale(0.7);
   }
 }
+#chatra:not(.chatra--expanded) {
+  visibility: hidden !important;
+  width: 1px !important;
+  height: 1px !important;
+  opacity: 0 !important;
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)" !important;
+  filter: alpha(opacity=0) !important;
+  pointer-events: none;
+}
 #post-comment .comment-head {
   margin-bottom: 1rem;
 }
@@ -4862,6 +4871,12 @@ _:future,
 #waline .vcards .vcard .vcontent.expand:after {
   z-index: 22;
 }
+#waline-wrap textarea {
+  background: url("https://gitee.com/wugenqiang/PictureBed/raw/master/CS-Notes/20200425091751.png") 100% 100% no-repeat;
+}
+#waline-wrap textarea:focus {
+  background-image: none;
+}
 .fireworks {
   position: fixed;
   top: 0;
@@ -5646,6 +5661,24 @@ blockquote.pullquote.right {
 }
 .note.danger:not(.no-icon):not(.modern)::before {
   color: #d9534f;
+}
+.comment-wrap .txt-right {
+  display: none;
+}
+.vpanel .vwrap {
+  min-height: 10rem;
+  background-image: url("https://gitee.com/wugenqiang/PictureBed/raw/master/CS-Notes/20200425091751.png");
+  -webkit-background-size: contain;
+  -moz-background-size: contain;
+  background-size: contain;
+  -webkit-background-size: 275px;
+  -moz-background-size: 275px;
+  background-size: 275px;
+  background-repeat: no-repeat;
+  background-position: right 10px;
+  top: 0;
+  background-color: rgba(255,255,255,0);
+  resize: none;
 }
 #article-container .tabs {
   position: relative;
