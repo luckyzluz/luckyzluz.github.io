@@ -107,21 +107,21 @@ theme: butterfly
 
 # Deployment
 ## Docs: https://hexo.io/docs/one-command-deployment
-# deploy:
-#   type: git
-#   repo: git@github.com:luckyzluz/luckyzluz.github.io.git
-#   branch: zblog
+deploy:
+  type: git
+  repo: git@github.com:luckyzluz/luckyzluz.github.io.git
+  branch: zbsource
 
 
 # deploy:
 # - type: git
 #   repo:
 #     gitHub: https://luckyzluz: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@github.com/luckyzluz/luckyzluz.github.io.git,zbsource
-deploy:
-- type: git
-  repo:
-    gitHub: https://luckyzluz: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@github.com/luckyzluz/luckyzluz.github.io.git
+# deploy:
+# - type: git
+#   repo:
+#     gitHub: https://luckyzluz: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@github.com/luckyzluz/luckyzluz.github.io.git
     # gitee: https://你的Gitee用户名:生成的Token@gitee.com/你的Gitee用户名/仓库名
     # coding: https://令牌用户名:生成的Token@e.coding.net/你的Coding用户名/仓库名.git
-  branch: zblog
-  message: 'Deloyed by Github Actions: {{ now("YYYY-MM--DD HH:mm:ss") }}'
+  # branch: zblog
+  # message: 'Deloyed by Github Actions: {{ now("YYYY-MM--DD HH:mm:ss") }}'
